@@ -144,10 +144,9 @@ $(function() {
                         row    = $('<tr>').addClass('bs_group_users highlight').html(td);
                     row.insertAfter(parent).show('slow');
                     parent.addClass('highlight');
-                    $('[data-title!=""]').qtip({
-                        content: { attr: 'data-title' },
-                        style: { classes: 'qtip-bootstrap' }
-                    });
+                    if(typeof tippy != 'undefined') {
+                        tippy(document.querySelectorAll('*:not([title=""])'),{arrow:true,theme:'light'});
+                    }
                 }
             }
         });

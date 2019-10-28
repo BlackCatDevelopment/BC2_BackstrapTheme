@@ -1,6 +1,6 @@
 (function(){
     var _MS_PER_DAY = 1000 * 60 * 60 * 24;
-    var pageID = $('#bsPageHeader').data('page');
+    
 
     // a and b are javascript Date objects
     function dateDiffInDays(a, b) {
@@ -45,6 +45,7 @@
     	var url     = $(this).attr("data-url");
         if(url)
         {
+alert('toggle tab, open url: ' + url);
             e.preventDefault();
 
           	var pane    = $(this);
@@ -60,91 +61,7 @@
                 },
                 success : function(data, status) {
                     if(target == '#headerfiles') {
-/*
-                        var table      = $('div'+target).find('table');
 
-                        if(data.byplugin) {
-
-                            var thead = $('div'+target).find('thead.pluginname').remove();
-                            var tbody = $('div'+target).find('tbody').remove();
-                            var tr    = $(tbody).find('tr').remove();
-
-                            $.each(data.byplugin, function(k, v) {
-                                var th   = $(thead).clone().detach();
-                                var body = $(tbody).clone().detach();
-                                th.find('span.pluginname').text(k);
-                                th.find('a.plugin_remove').attr('data-plugin',k);
-                                for(n=0;n<v.length;n++) {
-                                    var line = tr.clone();
-                                    line.find('td:nth-of-type(3)').text(v[n]);
-                                    line.find('a.plugin_file_remove').attr('data-file',v[n]);
-                                    line.appendTo(body);
-                                }
-                                table.append(th).append(body);
-                            });
-
-                            $(table).find('a.plugin_remove').unbind('click').on('click', function(e) {
-                                e.preventDefault();
-                                var plugin = $(this).data('plugin');
-                                $('.modal-body').html(
-                                    $.cattranslate('Do you really want to unlink the selected plugin?',undefined,undefined,'backstrap') +
-                                    '<br />' +
-                                    plugin
-                                );
-                                $('.modal-title').text($.cattranslate('Remove plugin',undefined,undefined,'backstrap'));
-                                $('#modal_dialog').modal('show');
-                                $('.modal-content button.btn-primary').unbind('click').on('click',function(e) {
-                                    e.preventDefault();
-                                    $('#modal_dialog').modal('hide');
-                                    $.ajax({
-                                        type    : 'POST',
-                                        url     : CAT_ADMIN_URL + '/page/headerfiles',
-                                        dataType: 'json',
-                                        data    : {
-                                            page_id: pageID,
-                                            remove_plugin: plugin
-                                        },
-                                        success : function(data, status) {
-console.log(data);
-                                        }
-                                    });
-                                });
-                            });
-                            $('a.plugin_file_remove').unbind('click').on('click', function(e) {
-                                e.preventDefault();
-                                var file = $(this).data('file');
-                                $('.modal-body').html(
-                                    $.cattranslate('Do you really want to unlink the selected file?',undefined,undefined,'backstrap') +
-                                    '<br />' +
-                                    file
-                                );
-                                //string,elem,attributes,module
-                                $('.modal-title').text($.cattranslate('Unlink plugin file',undefined,undefined,'backstrap'));
-                                $('#modal_dialog').modal('show');
-                                $('.modal-content button.btn-primary').unbind('click').on('click',function(e) {
-                                    e.preventDefault();
-                                    $('#modal_dialog').modal('hide');
-                                    $.ajax({
-                                        type    : 'POST',
-                                        url     : CAT_ADMIN_URL + '/page/headerfiles',
-                                        dataType: 'json',
-                                        data    : {
-                                            page_id: pageID,
-                                            remove_plugin_file: plugin
-                                        },
-                                        success : function(data, status) {
-console.log(data);
-                                        }
-                                    });
-                                });
-                            });
-                            $(table).show();
-                        }
-
-                        $('div'+target).append(data.forms.be_page_headerfiles_plugin);
-                        $('div'+target).append(data.forms.be_page_headerfiles_js);
-                        $('div'+target).append(data.forms.be_page_headerfiles_css);
-*/
                     }
                     else {
                         $('div'+target).html(data.message);
@@ -213,7 +130,7 @@ console.log(data);
         } else {
             $.ajax({
                 type    : 'POST',
-                url     : CAT_ADMIN_URL + '/page/save',
+                url     : CAT_ADMIN_URL + '/pages/save',
                 dataType: 'json',
                 data    : $('form#bsAddPageRelation').serialize(),
                 success : function(data, status) {
@@ -228,7 +145,7 @@ console.log(data);
     });
 
     // ----- remove page relation ----------------------------------------------
-    $('.fa-chain-broken').unbind('click').on('click', function(e) {
+    $('.bsUnlink').unbind('click').on('click', function(e) {
         var id = $(this).data('id');
         var _this = $(this);
         $('#bsDialog .modal-body').html(
@@ -236,14 +153,14 @@ console.log(data);
             '<br />' +
             $(this).parent().next('td').next('td').text()
         );
-        $('#bsDialog .modal-title').text($.cattranslate('Remove relation'));
+        $('#bsDialog .modal-title').text($.cattranslate('Remove relation','','BE'));
         $('#bsDialog').modal('show');
         $('#bsDialog .modal-content button.btn-primary').unbind('click').on('click',function(e) {
             e.preventDefault();
             $('#bsDialog').modal('hide');
             $.ajax({
                 type    : 'POST',
-                url     : CAT_ADMIN_URL + '/page/unlink',
+                url     : CAT_ADMIN_URL + '/pages/unlink',
                 dataType: 'json',
                 data    : {
                     page_id: pageID,
@@ -269,7 +186,7 @@ console.log(data);
             $('#modal_dialog').modal('hide');
             $.ajax({
                 type    : 'POST',
-                url     : CAT_ADMIN_URL + '/page/header',
+                url     : CAT_ADMIN_URL + '/pages/header',
                 dataType: 'json',
                 data    : {
                     page_id: pageID,
@@ -282,7 +199,7 @@ console.log(data);
     });
 
     // ----- show options panel ------------------------------------------------
-    $('.fa.fa-cogs').unbind('click').on('click', function(e) {
+    $('.fa.fa-cogs.bsOptions').unbind('click').on('click', function(e) {
         var id = $(this).data('id');
         $(this).parent().toggleClass('bg-light');
         $('#bsOptionsPanel_'+id).toggle('slow');
@@ -293,39 +210,10 @@ console.log(data);
         $('#bsOptionsPanel_'+id).hide('slow');
     });
 
-    // ----- delete section ----------------------------------------------------
-    $('.fa-trash').unbind('click').on('click', function(e) {
-        var id = $(this).data('id');
-        $('#bsDialog .modal-body').html(
-            $.cattranslate('Do you really want to delete this section?',undefined,undefined,'BE') +
-            '<br />' +
-            $.cattranslate('ID') + ': ' + id + ' | ' + $.cattranslate('Module',undefined,undefined,'BE') + ': ' + $(this).data('module')
-        );
-        $('#bsDialog .modal-title').html('<i class="fa fa-fw fa-warning text-danger"></i> '+$.cattranslate('Delete section'));
-        $('#bsDialog ').modal('show');
-        $('#bsDialog .modal-content button.btn-primary').unbind('click').on('click',function(e) {
-            e.preventDefault();
-            $.ajax({
-                type    : 'POST',
-                url     : CAT_ADMIN_URL + '/section/delete',
-                dataType: 'json',
-                data    : {
-                    page_id   : pageID,
-                    section_id: id
-                },
-                success : function(data, status) {
-                    BCGrowl($.cattranslate(data.message),true);
-                    if(data.success) {
-                        window.location.href = CAT_ADMIN_URL + '/page/edit/' + pageID
-                    }
-                }
-            });
-            $('#modal_dialog').modal('hide');
-        });
-    });
+    
 
     // ----- recover section ---------------------------------------------------
-    $('.fa-life-saver').unbind('click').on('click', function(e) {
+    $('.bsRecoverSection').unbind('click').on('click', function(e) {
         var id = $(this).data('id');
         $('#bsDialog .modal-body').html(
             $.cattranslate('Do you really want to recover this section?')
@@ -341,7 +229,7 @@ console.log(data);
                 success : function(data, status) {
                     BCGrowl($.cattranslate('Success'),true);
                     if(data.success) {
-                        window.location.href = CAT_ADMIN_URL + '/page/edit/' + pageID
+                        window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID
                     }
                 }
             });
@@ -349,37 +237,15 @@ console.log(data);
         });
     });
 
-    // ----- add section -------------------------------------------------------
-    $('button#bsAddonAdd').unbind('click').on('click', function(e) {
-        var addon = $('select#module option:selected').val();
-        if(addon.length) {
-            $.ajax({
-                type    : 'POST',
-                url     : CAT_ADMIN_URL + '/section/add',
-                dataType: 'json',
-                data    : {
-                    addon  : addon,
-                    block  : 1,
-                    page_id: pageID
-                },
-                success : function(data, status) {
-                    BCGrowl($.cattranslate(data.message),true);
-                    if(data.success) {
-                        window.location.href = CAT_ADMIN_URL + '/page/edit/' + pageID
-                    }
-                }
-            });
-        }
-    });
 
     // ----- move section ------------------------------------------------------
-    $('.fa-external-link').unbind('click').on('click', function(e) {
+    $('.bsMoveSection').unbind('click').on('click', function(e) {
         var dialog = $('#bsDialog').clone().detach();
         var id     = $(this).data('id');
         $(dialog).find('.modal-title').text($.cattranslate('Move section to another page'));
         $.ajax({
             type    : 'POST',
-            url     : CAT_ADMIN_URL + '/page/list',
+            url     : CAT_ADMIN_URL + '/pages/list',
             dataType: 'json',
             success : function(data, status) {
                 var select = $('<select name="page" id="page">');
@@ -408,7 +274,7 @@ console.log(data);
                                 if(data.message) {
                                     BCGrowl($.cattranslate(data.message));
                                 }
-                                window.location.href = CAT_ADMIN_URL + '/page/edit/' + pageID
+                                window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID
                             }
                         }
                     });
@@ -443,7 +309,7 @@ console.log(data);
     });
 
     // ----- attach publishing date/time dialog --------------------------------
-    $('.fa-calendar').on('click',function(e) {
+    $('.bsPublish').on('click',function(e) {
 
         var $this = $(this),
             id    = $this.data('id'),
@@ -578,26 +444,26 @@ console.log(data);
             type    : 'POST',
             url     : CAT_ADMIN_URL + '/section/save/' + id,
             dataType: 'json',
-            data    : { variant: variant},
+            data    : {page_id: pageID, variant: variant},
             success : function(data, status) {
-                window.location.href = CAT_ADMIN_URL + '/page/edit/' + pageID;
+                window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID;
             }
         });
     });
 
     // ----- save settings -----------------------------------------------------
-    $('div#contents.tab-pane.active div.options-panel form input.btn.btn-primary').unbind('click').on('click', function(e) {
+    $('div#contents.tab-pane.active div.options-panel form button.btn.btn-primary').unbind('click').on('click', function(e) {
         e.preventDefault();
-        var section_id = $('div#contents.tab-pane.active div.options-panel form input[name=section_id]').val();
+        var form = $(this).parentsUntil("form").parent();
         $.ajax({
             type    : 'POST',
-            url     : CAT_ADMIN_URL + '/section/save/' + section_id,
-            data    : $('div#contents.tab-pane.active div.options-panel form').serialize(),
+            url     : CAT_ADMIN_URL + '/section/save/',
+            data    : $(form).serialize(),
             dataType: 'json',
             success : function(data, status) {
                 if(data.success) {
                     BCGrowl($.cattranslate(data.message),data.success);
-                    window.location.href = CAT_ADMIN_URL + '/page/edit/' + pageID;
+                    window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID;
                 } else {
                     BCGrowl($.cattranslate(data.message));
                 }

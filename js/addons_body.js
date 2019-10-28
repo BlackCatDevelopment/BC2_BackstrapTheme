@@ -7,4 +7,17 @@ $(function() {
             $("table.table tbody tr:not('.type_"+filter+"')").hide();
         }
     });
+    $('button#bsAddonsCatalog').unbind('click').on('click', function(e) {
+        $.ajax({
+            type    : "GET",
+            url     : CAT_ADMIN_URL+"/addons/catalog/update",
+            dataType: "json",
+            success : function(data, status) {
+                BCGrowl('Success',true);
+                if(data.success) {
+                    window.location.href = CAT_ADMIN_URL + '/addons/catalog';
+                }
+            }
+        });
+    });
 });

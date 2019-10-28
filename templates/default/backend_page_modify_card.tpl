@@ -33,29 +33,6 @@
                       <div class="dropdown">
                         {if $block.infofiles}
                         <i class="fa fa-fw fa-info-circle text-primary" data-toggle="modal" data-target="#bsVariantInfo{$block.section_id}"></i>
-                        <div class="modal" tabindex="-1" role="dialog" id="bsVariantInfo{$block.section_id}">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title">{translate('Variants')}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                              </div>
-                              <div class="modal-body">
-                                {foreach $block.available_variants variant}
-                                <strong>{$variant}</strong><br />
-                                {if $block.infofiles.$variant}
-                                {include file=$block.infofiles.$variant}<br />
-                                {else}
-                                <p>{translate('No additional info available')}</p>
-                                {/if}
-                                {/foreach}
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">{translate('Close')}</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                         {/if}
                         <button class="btn dropdown-toggle" type="button" id="bsVariantDropdown{$block.section_id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <span class="font-weight-bold">{translate('Variant')}:</span> {$block.variant}
@@ -85,22 +62,22 @@
                   {if user_has_perm('pages_edit')}
                   <ul class="nav nav-left">
                     {if $block.state_id==2}
-                      <li><span class="fa fa-life-saver" title="{translate('Recover')}" data-id="{$block.section_id}"></span></li>
+                      <li><span class="fa fa-life-saver bsRecoverSection" title="{translate('Recover')}" data-id="{$block.section_id}"></span></li>
                     {else}
                       {if $block.options_file or $block.options_form}
-                      <li class=""><span class="fa fa-cogs text-primary" title="{translate('This module has additional options, click here to show the settings panel.')}" data-id="{$block.section_id}"></span></li>
+                      <li class=""><span class="fa fa-cogs bsOptions text-primary" title="{translate('This module has additional options, click here to show the settings panel.')}" data-id="{$block.section_id}"></span></li>
                       {/if}
                       <li><span class="fa fa-eye" title="{translate('If you set visibility to false, the section will <strong>not</strong> be shown. This means, all other settings - like periods of time - are ignored.')}" data-id="{$block.section_id}"></span></li>
-                      <li><span class="fa fa-calendar" title="{translate('Set publishing period')}" data-id="{$block.section_id}" data-pubstart="{$block.publ_start}" data-pubend="{$block.publ_end}" data-timestart="{$block.publ_by_time_start}" data-timeend="{$block.publ_by_time_end}"></span></li>
+                      <li><span class="fa fa-calendar bsPublish" title="{translate('Set publishing period')}" data-id="{$block.section_id}" data-pubstart="{$block.publ_start}" data-pubend="{$block.publ_end}" data-timestart="{$block.publ_by_time_start}" data-timeend="{$block.publ_by_time_end}"></span></li>
                       {if user_has_perm('pages_section_move') && user_has_module_perm($block.module)}
-                      <li><span class="fa fa-external-link" title="{translate('Move')}" data-id="{$block.section_id}" data-module="{$block.module}"></span></li>
+                      <li><span class="fa fa-external-link-alt bsMoveSection" title="{translate('Move')}" data-id="{$block.section_id}" data-module="{$block.module}"></span></li>
                       {/if}
                       {if block_has_revisions($block.section_id)}
                       <li><span class="fa fa-clone" title="{translate('View revisions')}"></span></li>
                       {/if}
                     {/if}
                     {if user_has_perm('pages_section_delete') && user_has_module_perm($block.module)}
-                      <li><span class="fa fa-trash text-danger" title="{translate('Delete')}" data-id="{$block.section_id}" data-module="{$block.module}"></span></li>
+                      <li><span class="fa fa-trash text-danger bsDelSection" title="{translate('Delete')}" data-id="{$block.section_id}" data-module="{$block.module}"></span></li>
                     {/if}
                   </ul>
                   {/if}
@@ -122,5 +99,30 @@
                   <button class="btn btn-primary btn-save" data-id="{$block.section_id}" data-page="{$page.page_id}">{translate('Save')}</button>
                 </div>
               </div>
+              {if $block.infofiles}
+              <div class="modal" tabindex="-1" role="dialog" id="bsVariantInfo{$block.section_id}">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">{translate('Variants')}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                      {foreach $block.available_variants variant}
+                      <strong>{$variant}</strong><br />
+                      {if $block.infofiles.$variant}
+                      {include file=$block.infofiles.$variant}<br />
+                      {else}
+                      <p>{translate('No additional info available')}</p>
+                      {/if}
+                      {/foreach}
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">{translate('Close')}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/if}
             </li>
 {/foreach}

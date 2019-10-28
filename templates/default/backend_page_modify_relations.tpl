@@ -1,3 +1,8 @@
+<div class="row flex">
+  <div class="col-md-12">
+    {include file="backend_page_tabs.tpl"}
+
+
         <div class="alert alert-info">
         {translate('You can link any page to other pages in different languages that have the same content.')}
         {translate('Use {language_menu()} in your frontend template to show links to the pages listed below.')}
@@ -15,7 +20,7 @@
           <tbody>
           {foreach $linked item}
           <tr>
-            <td><span class="fa fa-fw fa-chain-broken" data-id="{$item.page_id}"></span></td>
+            <td><span class="fa fa-fw fa-chain-broken bsUnlink" title="{translate('Unlink')}" data-id="{$item.page_id}"></span></td>
             <td>{$item.lang}</td>
             <td>{$item.menu_title} (ID: {$item.page_id})</td>
             <td>{cat_format_date($item.modified_when)}</td>
@@ -27,7 +32,7 @@
         <div class="alert alert-warning">{translate('There are no linked pages yet')}</div>
         {/if}
         
-        <form action="{$CAT_ADMIN_URL}/page/save" id="bsAddPageRelation">
+        <form action="{$CAT_ADMIN_URL}/pages/save" id="bsAddPageRelation">
           <input type="hidden" name="page_id" id="page_id" value="{$page_id}" />
           <fieldset>
             <legend>{translate('Set language relation')}</legend>
@@ -58,3 +63,5 @@
         <div class="alert alert-info" id="bsNoPagesInfo" style="display:none">
           {translate('There are no pages in the selected target language available.')}
         </div>
+  </div>{* END col *}
+</div>{* END row *}

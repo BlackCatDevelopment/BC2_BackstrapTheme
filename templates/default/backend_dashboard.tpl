@@ -1,6 +1,6 @@
 <button style="display:none" class="btn btn-sm btn-primary detach" id="bsAddWidget">{translate('Add widget')}</button>
 
-<div class="dashboard" data-id="{$dashboard.id}" data-columns="{$dashboard.columns}">
+<div class="dashboard"{if $dashboard.id} data-id="{$dashboard.id}"{/if} data-columns="{$dashboard.columns}">
 {if count($dashboard.widgets)}
     <button role="button" class="btn btn-sm btn-warning detach" id="dashboard_reset" data-id="{$dashboard.id}">{translate('Reset Dashboard')}</button>
     <div class="card-columns column-count-{$dashboard.columns}">
@@ -13,8 +13,14 @@
                     <span class="float-right remove fa fa-fw fa-trash"{if $widget.widget_id} data-id="{$widget.widget_id}"{/if}></span>
                     <span class="float-right toggle{if $widget.open != 'Y'} card-collapsed{/if} fa fa-fw fa-eye{if $widget.open != 'Y'}-slash{/if}"></span>
                 </div>
-                <div class="card-body"{if $widget.open != 'Y'} style="display:none;"{/if}>
-                    {$widget.content}
+                <div class="card-body p-1"{if $widget.open != 'Y'} style="display:none;"{/if}>
+                    {if $widget.image}
+                    <div class="row">
+                        <div class="col-2"><img src="{$widget.image}" alt="Widget icon" /></div>
+                        <div class="col-10 align-middle">{$widget.content}</div>
+                    </div>
+                    {else}{$widget.content}
+                    {/if}
                 </div>
             </div>
     {/foreach}

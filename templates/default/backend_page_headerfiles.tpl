@@ -1,10 +1,15 @@
+<div class="row flex">
+  <div class="col-md-12">
+    {include file="backend_page_tabs.tpl"}
+
+
     <div class="alert alert-info">
     {translate('You can manage Javascript- and CSS-Files resp. jQuery plugins to be loaded into the page header here.')}<br />
     {translate('Please note that there is a bunch of files that is loaded automatically, so there\'s no need to add them here.')}<br />
     {translate('These settings are page based, to manage global settings, goto Settings -> Header files.')}
-    </div><br /><br />
+    </div>
 
-    <div class="row">
+    <div class="row mt-2">
         <div class="col">
             <div class="form-check">
               <label class="form-check-label custom-control custom-checkbox">
@@ -27,10 +32,10 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mt-2">
         <div class="col">
             <table class="table table-striped table-sm">
-                <thead class="thead-dark">
+                <thead class="thead-light">
                     <tr><th colspan="2" scope="col">CSS</th></tr>
 {if is_array($files.css) && count($files.css)}
                     <tr>
@@ -47,7 +52,7 @@
 {/foreach}
 {else}
                 </thead>
-                <tr><td colspan="2">No files</td></tr>
+                <tr><td colspan="2">{translate('No files')}</td></tr>
 {/if}
                 </tbody>
             </table>
@@ -55,8 +60,8 @@
     </div>
     <div class="row">
         <div class="col">
-            <table class="table">
-                <thead class="thead-dark">
+            <table class="table table-striped table-sm">
+                <thead class="thead-light">
                     <tr><th colspan="2" scope="col">JavaScripts</th></tr>
 {if is_array($files.js) && count($files.js)}
                     <tr>
@@ -73,7 +78,7 @@
 {/foreach}
 {else}
                 </thead>
-                <tr><td colspan="2">No files</td></tr>
+                <tr><td colspan="2">{translate('No files')}</td></tr>
 {/if}
                 </tbody>
             </table>
@@ -96,3 +101,5 @@
 
 {include(file='backend_modal.tpl' modal_id='tplcss' modal_title='Add Template CSS', modal_text='', modal_savebtn='1')}
 
+  </div>{* END col *}
+</div>{* END row *}

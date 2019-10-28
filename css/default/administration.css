@@ -1,0 +1,7 @@
+div.row.area{
+    min-height:100px;
+    background-color:#fff;
+}
+div.row.area:nth-child(odd){
+    background-color:#e9ecef;
+}

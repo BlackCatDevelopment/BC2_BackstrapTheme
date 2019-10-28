@@ -39,6 +39,7 @@
                         <h2>{translate('Do you wish to login again?')}</h2>
                         <div>
                             <form method="post">
+                                <input type="hidden" name="acc" id="acc" value="acc" />
                                 <div class="form-group">
                                     <div class="input-group">
                                         <div class="input-group-addon"><span class="fa fa-user fa-fw"></span></div>

@@ -1,30 +1,6 @@
-<div class="detach" id="bsPageHeader" data-page="{$page.page_id}" data-lang="{$page.language}">{translate('Page')}: {$page.menu_title} (ID: {$page.page_id})</div>
-
 <div class="row flex">
   <div class="col-md-12">
-    <ul class="nav nav-tabs" role="tablist">{* Tabs *}
-      <li class="nav-item">
-        <a class="nav-link active" href="#contents" aria-controls="contents" role="tab" data-toggle="tab">{translate('Content')}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#relations" aria-controls="relations" role="tab" data-toggle="tab">{translate('Relations')}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#config" aria-controls="config" role="tab" data-toggle="tab" data-id="{$page.page_id}" data-url="{$CAT_ADMIN_URL}/page/settings">{translate('Settings')}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#headerfiles" aria-controls="headerfiles" role="tab" data-toggle="tab" data-id="{$page.page_id}" data-url="{$CAT_ADMIN_URL}/page/headerfiles">{translate('Header files')}</a>
-      </li>
-      <li class="nav-item ml-auto">
-        <span id="bsGlobalChangeIndicator" class="fa fa-fw fa-2x" title="{translate('This page has unsaved changes')}" ></span>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#help" aria-controls="help" role="tab" data-toggle="tab" title="{translate('Help')}">?</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{$page.href}" target="catPreview" title="{translate('See this page in the frontend; opens a new tab or browser window')}">{translate('Preview')}</a>
-      </li>
-    </ul>
+    {include file="backend_page_tabs.tpl"}
 
     <div class="tab-content">{* Tab panes *}
 
@@ -70,31 +46,6 @@
       </div>
 {/if}
       </div>{* END #contents tab-pane *}
-
-{* -------------------- START #config tab-pane -------------------- *}
-      <div role="tabpanel" class="tab-pane" id="config">
-        {* the content will be loaded via AJAX *}
-        <div class="fa fa-fw fa-spinner fa-pulse fa-3x text-center" style="width:100%"></div><span class="sr-only">Loading...</span>
-        <div class="alert alert-danger" style="display:none;">
-            {translate('The loading of the settings form failed!')}
-        </div>
-      </div>{* END #config tab-pane *}
-
-{* ------------------------- START #relations tab-pane -------------------- *}
-      <div role="tabpanel" class="tab-pane" id="relations">
-        {include file="backend_page_modify_relations.tpl"}
-      </div>{* END relations tab-pane *}
-
-{* ------------------------- START #headerfiles tab-pane -------------------- *}
-      <div role="tabpanel" class="tab-pane" id="headerfiles">
-        <div class="fa fa-fw fa-spinner fa-pulse fa-3x text-center" style="width:100%"></div><span class="sr-only">Loading...</span>
-      </div>{* END headerfiles tab-pane *}
-
-{* ------------------------- START #help tab-pane -------------------- *}
-      <div role="tabpanel" class="tab-pane" id="help">
-      {include file="help/de/page_edit.tpl"}
-      </div>
-
     </div>{* END tab content *}
   </div>{* END col *}
 </div>{* END row *}

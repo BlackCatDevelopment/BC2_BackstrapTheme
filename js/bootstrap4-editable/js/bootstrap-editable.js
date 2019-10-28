@@ -1,4 +1,4 @@
-/*! X-editable - v1.5.3 
+/*! X-editable - v1.5.3 - Bootstrap 4 Patch https://github.com/Talv/x-editable
 * In-place editing with Twitter Bootstrap, jQuery UI or pure jQuery
 * http://github.com/vitalets/x-editable
 * Copyright (c) 2018 Vitaliy Potapov; Licensed MIT */

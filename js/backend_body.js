@@ -1,4 +1,18 @@
+/*!
+  * backend_body.js
+  */
 (function($) {
+
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+
     jQuery.ajaxSetup({
         error: function( x, e )
         {
@@ -57,7 +71,9 @@
     }
 
     /* x-editable */
-    $('.editable').editable();
+    if(typeof editable != 'undefined') {
+        $('.editable').editable();
+    }
 
     /* handle session timeout and re-login */
     function CATSessionTimedOut()
@@ -74,6 +90,7 @@
             var dates  = {
                 'username_fieldname': $('input.form-control.u').prop('id'),
                 'password_fieldname': $('input.form-control.p').prop('id'),
+                'acc'               : true
             };
             dates[ufield] = $('input.form-control.u').val();
             dates[pfield] = $('input.form-control.p').val();
@@ -93,6 +110,9 @@
                         $('input.form-control.u').val('');
                         $('input.form-control.p').val('');
                         $('#bsSessionTimedOutDialog').modal('hide');
+                        //console.log("set cookie", data.cookie);
+                        //console.log("set token", data.token);
+                        setCookie(data.cookie, data.token);
                         // reset session timer
                         CATSessionSetTimer(sess_time,CATSessionTimedOut,'span#sesstime','sesstimealert');
                     }
@@ -112,7 +132,7 @@
     // allow to add a new page everywhere
     $("a.bsAddPage, button.bsAddPage").unbind("click").on("click",function(e) {
         e.preventDefault();
-        $("#add_page_modal .modal-title").text($.cattranslate("Add page"));
+        $("#add_page_modal .modal-title").text($.cattranslate('Add page',null,'BE'));
         // remove buttons from form
         $("#add_page_modal .form-group.row.buttonline").remove();
         // select parent; e.target is the icon so we need parent()
@@ -130,14 +150,57 @@
             $("#add_page_modal").modal("hide");
             $.ajax({
                 type    : "POST",
-                url     : CAT_ADMIN_URL+"/page/add/",
+                url     : CAT_ADMIN_URL+"/pages/add/",
                 dataType: "json",
                 data    : $("#add_page_modal form").serialize(),
                 success : function(data, status) {
                     BCGrowl(data.message,data.success);
-                    window.location.href = CAT_ADMIN_URL + "/page/edit/" + data.page_id
+                    window.location.href = CAT_ADMIN_URL + "/pages/edit/" + data.page_id
                 }
             });
+        });
+    });
+
+    // delete page
+    $('a.bsDelPage').unbind("click").on("click",function(e) {
+        e.preventDefault();
+        var title = $(this).parentsUntil('.list-group-item').parent().find('span.pagename').text();
+        var immort = $(this).parentsUntil('.dropright').find('i.fa-life-saver');
+        $('#bsDialog .modal-title').html('<div class="text-danger"><i class="fa fa-fw fa-warning"></i> '+$.cattranslate('Are you sure?')+'</div>');
+        $('#bsDialog .modal-body').html($.cattranslate('Do you really want to delete this page?')+'<br /><br />'+$.cattranslate('Page title')+": "+title);
+        if(immort.length) {
+            $('#bsDialog .modal-body').html($('#bsDialog .modal-body').html() + '<br /><br /><p class="text-danger">' + $.cattranslate('Please note: The page will be finally deleted!') + '</p>');
+        }
+        $('#bsDialog').modal('show');
+        var _this = $(this);
+        $("#bsDialog .modal-content button.btn-primary").unbind("click").on("click",function(e) {
+            e.preventDefault();
+            $("#bsDialog").modal("hide");
+            $('#bsDialog .modal-title').html('');
+            $('#bsDialog .modal-body').html('');
+            $.ajax({
+                type    : "POST",
+                url     : CAT_ADMIN_URL+"/pages/delete/"+_this.data('id'),
+                dataType: "json",
+                success : function(data, status) {
+                    BCGrowl(data.message,data.success);
+                    window.location.href = CAT_ADMIN_URL + "/pages/index"
+                }
+            });
+        });
+    });
+
+    // recover
+    $('a.bsRecoverPage').unbind("click").on("click",function(e) {
+        e.preventDefault();
+        $.ajax({
+            type    : "POST",
+            url     : CAT_ADMIN_URL+"/pages/recover/"+_this.data('id'),
+            dataType: "json",
+            success : function(data, status) {
+                BCGrowl(data.message,data.success);
+                window.location.href = CAT_ADMIN_URL + "/pages/index"
+            }
         });
     });
 
@@ -154,7 +217,7 @@
     if(typeof tippy != 'undefined') {
         tippy(document.querySelectorAll('*:not([title=""])'),{arrow:true,theme:'light'});
     } else {
-        alert('no tippy');
+        console.log('no tippy');
     }
 
     // detach = move to region header

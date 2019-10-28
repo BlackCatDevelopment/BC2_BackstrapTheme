@@ -32,7 +32,6 @@ $(function() {
     // handle folder select
     // #########################################################################
     $('select#dir_id').on('change', function() {
-console.log("jo");
         $('form#bsMediaFolderSelect').submit();
     });
 

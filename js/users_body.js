@@ -43,7 +43,6 @@ $(function() {
                     user_id: id
                 },
                 success : function(data, status) {
-console.log(data);
                     $(".modal-title").text($.cattranslate("Edit user",undefined,undefined,"BE"));
                     $(".modal-body").html(data.form);
                     //$('form').fieldset_to_tabs();
@@ -51,7 +50,26 @@ console.log(data);
                     $('div.form-group').addClass('row');
                     $('form').find('br').remove();
                     $("#modal_dialog").modal("show");
-                    //BCGrowl(data.message,data.success);
+                    $("#modal_dialog .modal-content button.btn-primary").unbind("click").on("click",function(e) {
+                        e.preventDefault();
+                        $.ajax({
+                            type    : "POST",
+                            url     : CAT_ADMIN_URL+"/users/edit",
+                            dataType: "json",
+                            data    : $("#modal_dialog form").serialize(),
+                            success : function(data, status) {
+                                if(data.success==true) {
+                                    $("#modal_dialog").modal("hide");
+                                    BCGrowl($.cattranslate('Success'),data.success);
+                                    window.location.href = CAT_ADMIN_URL + "/users";
+                                } else {
+                                    $("#modal_dialog .modal-body").html(data.message);
+                                    $("#modal_dialog .form-group.row.buttonline").remove();
+                                    $("#modal_dialog legend").remove();
+                                }
+                            }
+                        });
+                    });
                 }
             });
     });
