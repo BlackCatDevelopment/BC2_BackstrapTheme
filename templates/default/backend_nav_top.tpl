@@ -8,7 +8,9 @@
         {* menu(1) *}
 <?php $this->scope["contentmenu"] = \CAT\Backend::getMenuForScope(1); if(\CAT\Backend::getScope() == 1): $this->scope["contentactive"] = true; endif; ?>
         <div class="btn-group mr-2">
-          <button type="button" class="btn btn-{if $contentactive!=true}outline-{/if}secondary">{translate('Content')}</button>
+          <button type="button" class="btn btn-{if $contentactive!=true}outline-{/if}secondary">
+            <a href="{$CAT_ADMIN_URL}/content">{translate('Content')}</a>
+          </button>
           <button type="button" class="btn btn-{if $contentactive!=true}outline-{/if}secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="sr-only">Toggle Dropdown</span>
           </button>
@@ -23,9 +25,7 @@
           <button type="button" class="btn btn-{if $contentactive==true}outline-{/if}secondary">
             <a href="{$CAT_ADMIN_URL}/administration">{translate('Administration')}</a>
           </button>
-          
         </div>
-
 
         <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
           <li class="nav-item dropdown">
@@ -33,7 +33,7 @@
               <i class="fa fa-user fa-fw"></i> {cat_username()}
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bsUserDropdown">
-              <a href="#" class="dropdown-item active"><i class="fa fa-user fa-fw"></i> {translate('User Profile')}</a>
+              <a href="{$CAT_ADMIN_URL}/users/profile" class="dropdown-item active"><i class="fa fa-user fa-fw"></i> {translate('User Profile')}</a>
               <a href="{$CAT_ADMIN_URL}/logout/" class="dropdown-item"><i class="fa fa-sign-out fa-fw"></i> {translate('Logout')}</a>
             </div>
           </li>

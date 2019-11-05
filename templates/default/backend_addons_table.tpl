@@ -22,8 +22,8 @@
           <tr>
             <th>{translate('Type')}</th>
             <th>{translate('Name')}</th>
-            <th>{translate('Description')}</th>
             <th></th>
+            <th>{translate('Description')}</th>
           </tr>
         </thead>
         <tbody>
@@ -54,6 +54,7 @@
           {/if}
               </span>
             </td>
+            <td>{if $module.icon}<img src="{$module.icon}" alt="Icon" />{/if}</td>
             <td class="bs-module-desc">
               {if $module.description}<p>{$module.description}</p>{/if}
               {if $module.warn}<span class="alert alert-warning">{$module.warn}</span>{/if}
@@ -65,7 +66,6 @@
                 {if $type!='notinstalled' && $module.removable == 'N'} | <span class="text-warning">{translate('You cannot uninstall this module as it is protected')}</span>{/if}
               </span>
             </td>
-            <td>{if $module.icon}<img src="{$module.icon}" alt="Icon" />{/if}</td>
           </tr>
 {/foreach}
         </tbody>

@@ -18,10 +18,11 @@ $pg = \CAT\Helper\Page::getInstance();
 $bootstrapcss = 'CAT/vendor/twbs/bootstrap/dist/css/bootstrap.min.css';
 
 $variant      = \CAT\Registry::get('DEFAULT_THEME_VARIANT');
-if($variant!='' && $variant!='default')
+if ($variant!='' && $variant!='default') {
     $bootstrapcss = 'CAT/vendor/thomaspark/bootswatch/dist/'.$variant.'/bootstrap.min.css';
+}
 
-if(\CAT\Backend::getArea()!=='login') {
+if (\CAT\Backend::getArea()!=='login') {
     $mod_headers = array(
         'backend' => array(
             'meta' => array(
@@ -44,7 +45,7 @@ if(\CAT\Backend::getArea()!=='login') {
             'jquery' => array(
                 'core'    => true,
                 'ui'      => true,
-                'plugins' => array ('jquery.cattranslate','jquery.cookies','jquery.mark'),
+                'plugins' => array('jquery.cattranslate','jquery.cookies','jquery.mark'),
             ),
             'js' => array(
                 array(
@@ -58,41 +59,37 @@ if(\CAT\Backend::getArea()!=='login') {
         )
     );
 
-    if($debug) {
+    if ($debug) {
         $mod_headers['backend']['js'][] = 'templates/backstrap/js/debug.js';
     }
 
-    if(file_exists(CAT_JS_PATH.'/jquery-ui/ui/i18n/jquery-ui-i18n.min.js')) {
+    if (file_exists(CAT_JS_PATH.'/jquery-ui/ui/i18n/jquery-ui-i18n.min.js')) {
         $mod_headers['backend']['js'][] = 'modules/lib_javascript/jquery-ui/ui/i18n/jquery-ui-i18n.min.js';
     }
 
     $file_to_find = \CAT\Helper\Directory::sanitizePath(
         CAT_ENGINE_PATH.'/modules/lib_javascript/plugins/jquery.datatables/i18n/'.strtolower(\CAT\Base::lang()->getLang()).'.json'
     );
-    if(file_exists($file_to_find)) {
+    if (file_exists($file_to_find)) {
         $mod_headers['backend']['javascript'][] = 'CAT_ASSET_URL = "'.\CAT\Helper\Validate::path2uri($file_to_find).'";';
     }
 
-    if(\CAT\Backend::getArea() == 'media')
-    {
+    if (\CAT\Backend::getArea() == 'media') {
         $mod_headers['backend']['css'][] = array('file'=>'templates/backstrap/css/default/ekko-lightbox.css');
         $mod_headers['backend']['js'][]  = 'templates/backstrap/js/bootstrap.lightbox/ekko-lightbox.min.js';
         $mod_headers['backend']['css'][] = array('file'=>'modules/lib_javascript/plugins/jquery.fileupload/css/jquery.fileupload-ui.css');
         $mod_headers['backend']['js'][]  = 'modules/lib_javascript/plugins/jquery.datatables/js/jquery.dataTables.min.js';
     }
 
-    if(\CAT\Backend::getArea() == 'admintools')
-    {
+    if (\CAT\Backend::getArea() == 'admintools') {
         $mod_headers['backend']['js'][] = 'templates/backstrap/js/dashboard.js';
     }
 
-    if(\CAT\Backend::getArea() == 'roles')
-    {
+    if (\CAT\Backend::getArea() == 'roles') {
         $mod_headers['backend']['css'][] = array('file'=>'modules/lib_javascript/plugins/jquery.fancytree/skin-lion/ui.fancytree.min.css');
     }
 
-    if(\CAT\Backend::getArea() == 'pages')
-    {
+    if (\CAT\Backend::getArea() == 'pages') {
         $mod_headers['backend']['js'][] = 'templates/backstrap/js/SlickGrid/lib/jquery.event.drag-2.3.0.js';
         $mod_headers['backend']['js'][] = 'templates/backstrap/js/SlickGrid/slick.core.js';
         $mod_headers['backend']['js'][] = 'templates/backstrap/js/SlickGrid/slick.formatters.js';

@@ -2,6 +2,46 @@ $(function() {
 
     var pageID = $('#bsPageHeader').data('page');
 
+    // ----- select variant ----------------------------------------------------
+    $('input.bsVariantSave').unbind('click').on('click',function(e) {
+        var _this   = this;
+        var id      = $(this).data('id');
+        var variant = $(this).parent().parent().find('select[name=variant]').val();
+        $.ajax({
+            type    : 'POST',
+            url     : CAT_ADMIN_URL + '/section/save/' + id,
+            dataType: 'json',
+            data    : {page_id: pageID, variant: variant},
+            success : function(data, status) {
+                window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID;
+            }
+        });
+    });
+
+    // ----- toggle visibility -------------------------------------------------
+    $('div.card-header span.toggle').on('click',function() {
+        $(this).parentsUntil('li').next('.card-body').toggle('slow');
+        $(this).toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
+    });
+    $('div.card-header').on('dblclick',function() {
+        $(this).next('.card-body').toggle('slow');
+        $(this).find('span.toggle').toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
+    });
+    $('button#bsCollapseAll').on('click',function(e) {
+        e.preventDefault();
+        $('ul.draggable-card li.card').each(function() {
+            $(this).find('.card-body').hide();
+            $(this).find('span.toggle').toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
+        });
+    });
+    $('button#bsExpandAll').on('click',function(e) {
+        e.preventDefault();
+        $('ul.draggable-card li.card').each(function() {
+            $(this).find('.card-body').show();
+            $(this).find('span.toggle').toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
+        });
+    });
+
     // ----- add section -------------------------------------------------------
     $('button#bsAddonAdd').unbind('click').on('click', function(e) {
         var addon = $('select#module option:selected').val();
@@ -24,7 +64,6 @@ $(function() {
             });
         }
     });
-
 
     // ----- delete section ----------------------------------------------------
     $('.bsDelSection').unbind('click').on('click', function(e) {
@@ -55,6 +94,88 @@ $(function() {
             });
             $('#modal_dialog').modal('hide');
         });
+    });
+
+    // ----- recover section ---------------------------------------------------
+    $('.bsRecoverSection').unbind('click').on('click', function(e) {
+        var id = $(this).data('id');
+        $('#bsDialog .modal-body').html(
+            $.cattranslate('Do you really want to recover this section?')
+        );
+        $('#bsDialog .modal-title').html('<i class="fa fa-fw fa-life-saver"></i> '+$.cattranslate('Recover section'));
+        $('#bsDialog').modal('show');
+        $('#bsDialog .modal-content button.btn-primary').unbind('click').on('click',function(e) {
+            e.preventDefault();
+            $.ajax({
+                type    : 'POST',
+                url     : CAT_ADMIN_URL + '/section/recover/' + id,
+                dataType: 'json',
+                success : function(data, status) {
+                    BCGrowl($.cattranslate('Success'),true);
+                    if(data.success) {
+                        window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID
+                    }
+                }
+            });
+            $('#bsDialog').modal('hide');
+        });
+    });
+
+    // ----- move section ------------------------------------------------------
+    $('.bsMoveSection').unbind('click').on('click', function(e) {
+        var dialog = $('#bsDialog').clone().detach();
+        var id     = $(this).data('id');
+        $(dialog).find('.modal-title').text($.cattranslate('Move section to another page'));
+        $.ajax({
+            type    : 'POST',
+            url     : CAT_ADMIN_URL + '/pages/list',
+            dataType: 'json',
+            success : function(data, status) {
+                var select = $('<select name="page" id="page">');
+                var prefix = "|- ";
+                for(index in data) {
+                    var offset = prefix.repeat(data[index].level);
+                    select.append('<option value="'+data[index].page_id+'"'+(data[index].page_id==pageID ? ' disabled="disabled"' : '')+'>'+offset+data[index].menu_title+'</option>');
+                }
+                select.appendTo($(dialog).find('.modal-body'));
+                $(dialog).modal('show');
+                $(dialog).find('.modal-content button.btn-primary').unbind('click').on('click',function(e) {
+                    e.preventDefault();
+                    var to = $(dialog).find('.modal-content select :selected').val();
+                    $(dialog).modal('hide');
+                    $.ajax({
+                        type    : 'POST',
+                        url     : CAT_ADMIN_URL + '/section/move',
+                        dataType: 'json',
+                        data    : {
+                            page_id: pageID,
+                            section_id: id,
+                            to: to
+                        },
+                        success : function(data, status) {
+                            if(data.success) {
+                                if(data.message) {
+                                    BCGrowl($.cattranslate(data.message));
+                                }
+                                window.location.href = CAT_ADMIN_URL + '/pages/edit/' + pageID
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    });
+
+    // ----- show options panel ------------------------------------------------
+    $('.fa.fa-cogs.bsOptions').unbind('click').on('click', function(e) {
+        var id = $(this).data('id');
+        $(this).parent().toggleClass('bg-light');
+        $('#bsOptionsPanel_'+id).toggle('slow');
+    });
+
+    $('div.card-content div.form-group.row.buttonline input.btn.btn-primary').unbind('click').on('click', function(e) {
+        var id = $(this).data('id');
+        $('#bsOptionsPanel_'+id).hide('slow');
     });
 
     if($("#bs-pagesGrid").length) {
