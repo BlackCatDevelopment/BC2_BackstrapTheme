@@ -2,17 +2,6 @@
   * backend_body.js
   */
 (function($) {
-
-    function setCookie(name,value,days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-    }
-
     jQuery.ajaxSetup({
         error: function( x, e )
         {
@@ -110,9 +99,6 @@
                         $('input.form-control.u').val('');
                         $('input.form-control.p').val('');
                         $('#bsSessionTimedOutDialog').modal('hide');
-                        //console.log("set cookie", data.cookie);
-                        //console.log("set token", data.token);
-                        setCookie(data.cookie, data.token);
                         // reset session timer
                         CATSessionSetTimer(sess_time,CATSessionTimedOut,'span#sesstime','sesstimealert');
                     }
@@ -255,6 +241,33 @@
         });
     });
 
+    $("#sidebar-closer").click(function() {
+        $("#sidebar")
+            .css("overflow-x","hidden")
+            .css("white-space","nowrap")
+            .removeClass("col-md-2 col-xs-1")
+            .addClass("col-0")
+            .queue(function(){
+                $("main").addClass("ml-5");
+                $( this ).dequeue();
+            });
+    });
+
+/*
+    // toggle sidebar
+    $("#sidebar-closer").click(function() {
+        $("#sidebar").css("display","none").queue(function(){
+            $("#sidebar-opener").addClass("visible");
+            $("main").addClass("ml-5");
+            $( this ).dequeue();
+        })
+    });
+    $("#sidebar-opener").click(function() {
+        $("#sidebar-opener").removeClass("visible");
+        $("main").removeClass("ml-5");
+        $("#sidebar").show("slide","slow");
+    });
+*/
     // add session timer
     var sess_time = CATTimeStringToSecs($('div#sessiontimer span#sesstime').text());
     CATSessionSetTimer(sess_time,CATSessionTimedOut,'span#sesstime','sesstimealert');

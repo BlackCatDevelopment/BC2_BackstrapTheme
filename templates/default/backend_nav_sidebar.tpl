@@ -6,7 +6,7 @@
                     <div class="dropright">
                         <a class="dropdown-toggle" href="#" role="button" id="bsPageMenu{$item.page_id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cogs"></i></a>
                         <div class="dropdown-menu" aria-labelledby="bsPageMenu{$item.page_id}">
-                            <a href="{$item.href}" class="list-group-link" title="{translate('Open in frontend (in new window/tab)')}" target=”_blank”><i class="fa fa-fw fa-eye"></i></a>
+                            <a href="{$item.href}" class="list-group-link" title="{translate('Open in frontend (in new window/tab)')}" target=â€_blankâ€><i class="fa fa-fw fa-eye"></i></a>
                             {if user_has_perm('pages_edit')}
                             <span style="border-right:1px solid #ccc;margin-right:5px"></span>
                             <a href="{$_root.CAT_ADMIN_URL}/pages/edit/{$item.page_id}" class="list-group-link" title="{translate('Edit page')}"><i class="fa fa-fw fa-edit"></i></a>
@@ -46,18 +46,21 @@
         </div>
     </div>
 
-    <div data-toggle="collapse" data-target="#sidebar" id="sidebar-closer" class="bg-dark">
+    <div data-toggle="collapse" data-target="#sidebar" id="sidebar-closer" class="">
     </div>
 {/if}
 
 <?php else: ?>
-    <div class="col-md-2 col-xs-1 p-l-0 p-r-0 collapse show" id="sidebar">
+    <div class="col-md-2 col-xs-1 p-l-0 p-r-0" id="sidebar">
+      <div id="sidebar-closer" class="text-right"><i class="fa fa-fw fa-times"></i></div>
       <input class="form-control" id="bsPageSearch" placeholder="{translate('Search')}..." autocomplete="off" type="search" /><br />
-      {foreach $MAIN_MENU page}{if $page.name!='content' && $page.name!='administration'}
+{foreach $areas page}
+    {if $page.scope_id==2 && $page.name!="administration" && $page.name!="content"}
+        {if $page.level==1}
       <a class="nav-link{if $page.name==$area} active{/if}" href="{$page.href}"><i class="fa fa-fw fa-{$page.name}"></i> {translate($page.title)}</a>
-      {/if}{/foreach}
+        {/if}
+    {/if}
+{/foreach}
     </div>
-
-    <div data-toggle="collapse" data-target="#sidebar" id="sidebar-closer" class="bg-dark">
-    </div>
+    <div id="sidebar-opener" class="pt-1 pl-2"><i class="fa fa-fw fa-outdent"></i></div>
 <?php endif; ?>
