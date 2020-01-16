@@ -18,6 +18,12 @@
           {translate('Not (yet) installed')}
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link{if $current=="upload"} active{/if}" href="{$CAT_ADMIN_URL}/addons/upload">
+          <span class="fa fa-fw fa-upload"></span>
+          {translate('Upload zip')}
+        </a>
+    </li>
     {/if}
     {if user_has_perm('addons_create')}
     <li class="nav-item">

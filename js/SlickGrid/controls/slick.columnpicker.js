@@ -1,36 +1,36 @@
-  /***
-   * A control to add a Column Picker (right+click on any column header to reveal the column picker)
-   *
-   * USAGE:
-   *
-   * Add the slick.columnpicker.(js|css) files and register it with the grid.
-   *
-   * Available options, by defining a columnPicker object:
-   *
-   *  var options = {
-   *    enableCellNavigation: true,
-   *    columnPicker: {
-   *      columnTitle: "Columns",                 // default to empty string
-   *
-   *      // the last 2 checkboxes titles
-   *      hideForceFitButton: false,              // show/hide checkbox near the end "Force Fit Columns" (default:false)
-   *      hideSyncResizeButton: false,            // show/hide checkbox near the end "Synchronous Resize" (default:false)
-   *      forceFitTitle: "Force fit columns",     // default to "Force fit columns"
-   *      headerColumnValueExtractor: "Extract the column label" // default to column.name
-   *      syncResizeTitle: "Synchronous resize",  // default to "Synchronous resize"
-   *    }
-   *  };
-   *
-   * @class Slick.Controls.ColumnPicker
-   * @constructor
-   */
-
-'use strict';
+/***
+ * A control to add a Column Picker (right+click on any column header to reveal the column picker)
+ *
+ * USAGE:
+ *
+ * Add the slick.columnpicker.(js|css) files and register it with the grid.
+ *
+ * Available options, by defining a columnPicker object:
+ *
+ *  var options = {
+ *    enableCellNavigation: true,
+ *    columnPicker: {
+ *      columnTitle: "Columns",                 // default to empty string
+ *
+ *      // the last 2 checkboxes titles
+ *      hideForceFitButton: false,              // show/hide checkbox near the end "Force Fit Columns" (default:false)
+ *      hideSyncResizeButton: false,            // show/hide checkbox near the end "Synchronous Resize" (default:false)
+ *      forceFitTitle: "Force fit columns",     // default to "Force fit columns"
+ *      headerColumnValueExtractor: "Extract the column label" // default to column.name
+ *      syncResizeTitle: "Synchronous resize",  // default to "Synchronous resize"
+ *    }
+ *  };
+ *
+ * @class Slick.Controls.ColumnPicker
+ * @constructor
+ */
 
 (function ($) {
+  'use strict';
   function SlickColumnPicker(columns, grid, options) {
     var _grid = grid;
     var _options = options;
+    var $columnTitleElm;
     var $list;
     var $menu;
     var columnCheckboxes;
@@ -56,13 +56,13 @@
       _options = $.extend({}, defaults, options);
 
       $menu = $("<div class='slick-columnpicker' style='display:none' />").appendTo(document.body);
-      var $close = $("<button type='button' class='close' data-dismiss='slick-columnpicker' aria-label='Close'><span class='close' aria-hidden='true'>&times;</span></button>").appendTo($menu);
+      $("<button type='button' class='close' data-dismiss='slick-columnpicker' aria-label='Close'><span class='close' aria-hidden='true'>&times;</span></button>").appendTo($menu);
 
       // user could pass a title on top of the columns list
-      if(_options.columnPickerTitle || (_options.columnPicker && _options.columnPicker.columnTitle)) {
+      if (_options.columnPickerTitle || (_options.columnPicker && _options.columnPicker.columnTitle)) {
         var columnTitle = _options.columnPickerTitle || _options.columnPicker.columnTitle;
-        var $title = $("<div class='title'/>").append(columnTitle);
-        $title.appendTo($menu);
+        $columnTitleElm = $("<div class='title'/>").append(columnTitle);
+        $columnTitleElm.appendTo($menu);
       }
 
       $menu.on("click", updateColumn);
@@ -79,30 +79,32 @@
       _grid.onHeaderContextMenu.unsubscribe(handleHeaderContextMenu);
       _grid.onColumnsReordered.unsubscribe(updateColumnOrder);
       $(document.body).off("mousedown", handleBodyMouseDown);
-      $("div.slick-columnpicker").hide(_options.fadeSpeed);
+      $("div.slick-columnpicker").hide(_options && _options.columnPicker && _options.columnPicker.fadeSpeed);
       $menu.remove();
     }
 
     function handleBodyMouseDown(e) {
       if (($menu && $menu[0] != e.target && !$.contains($menu[0], e.target)) || e.target.className == "close") {
-        $menu.hide(_options.fadeSpeed);
+        $menu.hide(_options && _options.columnPicker && _options.columnPicker.fadeSpeed);
       }
     }
 
-    function handleHeaderContextMenu(e, args) {
+    function handleHeaderContextMenu(e) {
       e.preventDefault();
       $list.empty();
       updateColumnOrder();
       columnCheckboxes = [];
 
-      var $li, $input;
-      var columnLabel;
+      var $li, $input, columnId;
+      var columnLabel, excludeCssClass;
       for (var i = 0; i < columns.length; i++) {
-        $li = $("<li />").appendTo($list);
-        $input = $("<input type='checkbox' />").data("column-id", columns[i].id);
+        columnId = columns[i].id;
+        excludeCssClass = columns[i].excludeFromColumnPicker ? "hidden" : "";
+        $li = $('<li class="' + excludeCssClass + '" />').appendTo($list);
+        $input = $("<input type='checkbox' id='colpicker-" + columnId + "' />").data("column-id", columnId).appendTo($li);
         columnCheckboxes.push($input);
 
-        if (_grid.getColumnIndex(columns[i].id) != null) {
+        if (_grid.getColumnIndex(columnId) != null) {
           $input.attr("checked", "checked");
         }
 
@@ -111,10 +113,9 @@
         } else {
           columnLabel = defaults.headerColumnValueExtractor(columns[i]);
         }
-        
-        $("<label />")
+
+        $("<label for='colpicker-" + columnId + "' />")
           .html(columnLabel)
-          .prepend($input)
           .appendTo($li);
       }
 
@@ -125,11 +126,8 @@
       if (!(_options.columnPicker && _options.columnPicker.hideForceFitButton)) {
         var forceFitTitle = (_options.columnPicker && _options.columnPicker.forceFitTitle) || _options.forceFitTitle;
         $li = $("<li />").appendTo($list);
-        $input = $("<input type='checkbox' />").data("option", "autoresize");
-        $("<label />")
-            .text(forceFitTitle)
-            .prepend($input)
-            .appendTo($li);
+        $input = $("<input type='checkbox' id='colpicker-forcefit' />").data("option", "autoresize").appendTo($li);
+        $("<label for='colpicker-forcefit' />").text(forceFitTitle).appendTo($li);
         if (_grid.getOptions().forceFitColumns) {
           $input.attr("checked", "checked");
         }
@@ -138,21 +136,18 @@
       if (!(_options.columnPicker && _options.columnPicker.hideSyncResizeButton)) {
         var syncResizeTitle = (_options.columnPicker && _options.columnPicker.syncResizeTitle) || _options.syncResizeTitle;
         $li = $("<li />").appendTo($list);
-        $input = $("<input type='checkbox' />").data("option", "syncresize");
-        $("<label />")
-            .text(syncResizeTitle)
-            .prepend($input)
-            .appendTo($li);
+        $input = $("<input type='checkbox' id='colpicker-syncresize' />").data("option", "syncresize").appendTo($li);
+        $("<label for='colpicker-syncresize' />").text(syncResizeTitle).appendTo($li);
         if (_grid.getOptions().syncColumnCellResize) {
           $input.attr("checked", "checked");
         }
       }
 
       $menu
-          .css("top", e.pageY - 10)
-          .css("left", e.pageX - 10)
-          .css("max-height", $(window).height() - e.pageY -10)
-          .fadeIn(_options.fadeSpeed);
+        .css("top", e.pageY - 10)
+        .css("left", e.pageX - 10)
+        .css("max-height", $(window).height() - e.pageY - 10)
+        .fadeIn(_options && _options.columnPicker && _options.columnPicker.fadeSpeed);
 
       $list.appendTo($menu);
     }
@@ -167,7 +162,7 @@
       var current = _grid.getColumns().slice(0);
       var ordered = new Array(columns.length);
       for (var i = 0; i < ordered.length; i++) {
-        if ( _grid.getColumnIndex(columns[i].id) === undefined ) {
+        if (_grid.getColumnIndex(columns[i].id) === undefined) {
           // If the column doesn't return a value from getColumnIndex,
           // it is hidden. Leave it in this position.
           ordered[i] = columns[i];
@@ -179,29 +174,36 @@
       columns = ordered;
     }
 
+    /** Update the Titles of each sections (command, customTitle, ...) */
+    function updateAllTitles(gridMenuOptions) {
+      if ($columnTitleElm && $columnTitleElm.text) {
+        $columnTitleElm.text(gridMenuOptions.columnTitle);
+      }
+    }
+
     function updateColumn(e) {
       if ($(e.target).data("option") == "autoresize") {
         if (e.target.checked) {
-          _grid.setOptions({forceFitColumns:true});
+          _grid.setOptions({ forceFitColumns: true });
           _grid.autosizeColumns();
         } else {
-          _grid.setOptions({forceFitColumns:false});
+          _grid.setOptions({ forceFitColumns: false });
         }
         return;
       }
 
       if ($(e.target).data("option") == "syncresize") {
         if (e.target.checked) {
-          _grid.setOptions({syncColumnCellResize:true});
+          _grid.setOptions({ syncColumnCellResize: true });
         } else {
-          _grid.setOptions({syncColumnCellResize:false});
+          _grid.setOptions({ syncColumnCellResize: false });
         }
         return;
       }
 
       if ($(e.target).is(":checkbox")) {
         var visibleColumns = [];
-        $.each(columnCheckboxes, function (i, e) {
+        $.each(columnCheckboxes, function (i) {
           if ($(this).is(":checked")) {
             visibleColumns.push(columns[i]);
           }
@@ -213,7 +215,7 @@
         }
 
         _grid.setColumns(visibleColumns);
-        onColumnsChanged.notify({columns: visibleColumns, grid: _grid});
+        onColumnsChanged.notify({ columns: visibleColumns, grid: _grid });
       }
     }
 
@@ -227,10 +229,11 @@
       "init": init,
       "getAllColumns": getAllColumns,
       "destroy": destroy,
+      "updateAllTitles": updateAllTitles,
       "onColumnsChanged": onColumnsChanged
     };
   }
 
   // Slick.Controls.ColumnPicker
-  $.extend(true, window, { Slick:{ Controls:{ ColumnPicker:SlickColumnPicker }}});
+  $.extend(true, window, { Slick: { Controls: { ColumnPicker: SlickColumnPicker } } });
 })(jQuery);

@@ -1,0 +1,20 @@
+#bs-pagesGrid{
+  margin-bottom:25px;
+  }
+
+div.bsMoveSubtree,div.bsMovePage{
+  cursor: move;
+}
+/*bars*/
+div.bsMoveSubtree::before,div.bsMovePage::before{
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: 900;
+  display:block;
+  width:100%;
+  height:100%;
+  content:"\f039"
+}
+div.bsMovePage::before{content:"\f15b";font-weight:400}
+div.selected{color:$red}
+div.moved{color:$green}

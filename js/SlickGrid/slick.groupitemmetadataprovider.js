@@ -38,7 +38,8 @@
       toggleCollapsedCssClass: "collapsed",
       enableExpandCollapse: true,
       groupFormatter: defaultGroupCellFormatter,
-      totalsFormatter: defaultTotalsCellFormatter
+      totalsFormatter: defaultTotalsCellFormatter,
+      includeHeaderTotals: false
     };
 
     options = $.extend(true, {}, _defaults, options);
@@ -137,13 +138,15 @@
     }
 
     function getGroupRowMetadata(item) {
+      var groupLevel = item && item.level;
       return {
         selectable: false,
         focusable: options.groupFocusable,
-        cssClasses: options.groupCssClass,
+        cssClasses: options.groupCssClass + ' slick-group-level-' + groupLevel,
+        formatter: options.includeHeaderTotals && options.totalsFormatter,
         columns: {
           0: {
-            colspan: "*",
+            colspan: options.includeHeaderTotals?"1":"*",
             formatter: options.groupFormatter,
             editor: null
           }
@@ -152,10 +155,11 @@
     }
 
     function getTotalsRowMetadata(item) {
+      var groupLevel = item && item.group && item.group.level;      
       return {
         selectable: false,
         focusable: options.totalsFocusable,
-        cssClasses: options.totalsCssClass,
+        cssClasses: options.totalsCssClass + ' slick-group-level-' + groupLevel,
         formatter: options.totalsFormatter,
         editor: null
       };

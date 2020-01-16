@@ -7,7 +7,8 @@
           Avg: AvgAggregator,
           Min: MinAggregator,
           Max: MaxAggregator,
-          Sum: SumAggregator
+          Sum: SumAggregator,
+          Count: CountAggregator
         }
       }
     }
@@ -77,8 +78,10 @@
     var totalRows = 0;
 
     // events
+    var onSetItemsCalled = new Slick.Event();
     var onRowCountChanged = new Slick.Event();
     var onRowsChanged = new Slick.Event();
+    var onRowsOrCountChanged = new Slick.Event();
     var onPagingInfoChanged = new Slick.Event();
 
     options = $.extend(true, {}, defaults, options);
@@ -127,6 +130,10 @@
       return items;
     }
 
+    function getIdPropertyName() {
+      return idProperty;
+    }
+
     function setItems(data, objectIdProperty) {
       if (objectIdProperty !== undefined) {
         idProperty = objectIdProperty;
@@ -136,6 +143,7 @@
       updateIdxById();
       ensureIdUniqueness();
       refresh();
+      onSetItemsCalled.notify({ idProperty: objectIdProperty }, null, self);
     }
 
     function setPagingOptions(args) {
@@ -185,7 +193,7 @@
       sortComparer = null;
       var oldToString = Object.prototype.toString;
       Object.prototype.toString = (typeof field == "function") ? field : function () {
-        return this[field]
+        return this[field];
       };
       // an extra reversal for descending sort keeps the sort stable
       // (assuming a stable native sort implementation, which isn't true in some cases)
@@ -218,7 +226,7 @@
     function getFilter(){
       return filter;
     }
-    
+
     function setFilter(filterFn) {
       filter = filterFn;
       if (options.inlineFilters) {
@@ -355,10 +363,39 @@
     }
 
     function updateItem(id, item) {
-      if (idxById[id] === undefined || id !== item[idProperty]) {
-        throw new Error("Invalid or non-matching id");
+console.log("updateItem",id,item);
+      // see also https://github.com/mleibman/SlickGrid/issues/1082
+      if (idxById[id] === undefined) {
+        throw new Error("Invalid id");
+      }
+
+      // What if the specified item also has an updated idProperty?
+      // Then we'll have to update the index as well, and possibly the `updated` cache too.
+      if (id !== item[idProperty]) {
+        // make sure the new id is unique:
+        var newId = item[idProperty];
+        if (newId == null) {
+          throw new Error("Cannot update item to associate with a null id");
+        }
+        if (idxById[newId] !== undefined) {
+          throw new Error("Cannot update item to associate with a non-unique id");
+        }
+        idxById[newId] = idxById[id];
+        delete idxById[id];
+
+        // Also update the `updated` hashtable/markercache? Yes, `recalc()` inside `refresh()` needs that one!
+        if (updated && updated[id]) {
+          delete updated[id];
+        }
+
+        // Also update the row indexes? no need since the `refresh()`, further down, blows away the `rowsById[]` cache!
+
+        id = newId;
       }
       items[idxById[id]] = item;
+
+      // Also update the rows? no need since the `refresh()`, further down, blows away the `rows[]` cache and recalculates it via `recalc()`!
+
       if (!updated) {
         updated = {};
       }
@@ -428,7 +465,7 @@
       }
       return low;
     }
-      
+
     function getLength() {
       return rows.length;
     }
@@ -582,7 +619,7 @@
           group = groups[i];
           group.groups = extractGroups(group.rows, group);
         }
-      }      
+      }
 
       groups.sort(groupingInfos[level].comparer);
 
@@ -632,7 +669,7 @@
       level = level || 0;
       var gi = groupingInfos[level];
       var groupCollapsed = gi.collapsed;
-      var toggledGroups = toggledGroupsByLevel[level];      
+      var toggledGroups = toggledGroupsByLevel[level];
       var idx = groups.length, g;
       while (idx--) {
         g = groups[idx];
@@ -654,7 +691,7 @@
         g.collapsed = groupCollapsed ^ toggledGroups[g.groupingKey];
         g.title = gi.formatter ? gi.formatter(g) : g.value;
       }
-    } 
+    }
 
     function flattenGroupedRows(groups, level) {
       level = level || 0;
@@ -679,7 +716,9 @@
     }
 
     function getFunctionInfo(fn) {
-      var fnRegex = /^function[^(]*\(([^)]*)\)\s*{([\s\S]*)}$/;
+      var fnStr = fn.toString();
+      var usingEs5 = fnStr.indexOf('function') >= 0; // with ES6, the word function is not present
+      var fnRegex = usingEs5 ? /^function[^(]*\(([^)]*)\)\s*{([\s\S]*)}$/ : /^[^(]*\(([^)]*)\)\s*{([\s\S]*)}$/;
       var matches = fn.toString().match(fnRegex);
       return {
         params: matches[1].split(","),
@@ -688,16 +727,23 @@
     }
 
     function compileAccumulatorLoop(aggregator) {
-      var accumulatorInfo = getFunctionInfo(aggregator.accumulate);
-      var fn = new Function(
-          "_items",
-          "for (var " + accumulatorInfo.params[0] + ", _i=0, _il=_items.length; _i<_il; _i++) {" +
-              accumulatorInfo.params[0] + " = _items[_i]; " +
-              accumulatorInfo.body +
-          "}"
-      );
-      fn.displayName = fn.name = "compiledAccumulatorLoop";
-      return fn;
+      if(aggregator.accumulate) {
+        var accumulatorInfo = getFunctionInfo(aggregator.accumulate);
+        var fn = new Function(
+            "_items",
+            "for (var " + accumulatorInfo.params[0] + ", _i=0, _il=_items.length; _i<_il; _i++) {" +
+                accumulatorInfo.params[0] + " = _items[_i]; " +
+                accumulatorInfo.body +
+            "}"
+        );
+        var fnName = "compiledAccumulatorLoop";
+        fn.displayName = fnName;
+        fn.name = setFunctionName(fn, fnName);
+        return fn;
+      } else {
+        return function noAccumulator() {
+        }
+      }
     }
 
     function compileFilter() {
@@ -733,7 +779,9 @@
       tpl = tpl.replace(/\$args\$/gi, filterInfo.params[1]);
 
       var fn = new Function("_items,_args", tpl);
-      fn.displayName = fn.name = "compiledFilter";
+      var fnName = "compiledFilter";
+      fn.displayName = fnName;
+      fn.name = setFunctionName(fn, fnName);
       return fn;
     }
 
@@ -774,8 +822,28 @@
       tpl = tpl.replace(/\$args\$/gi, filterInfo.params[1]);
 
       var fn = new Function("_items,_args,_cache", tpl);
-      fn.displayName = fn.name = "compiledFilterWithCaching";
+      var fnName = "compiledFilterWithCaching";
+      fn.displayName = fnName;
+      fn.name = setFunctionName(fn, fnName);
       return fn;
+    }
+
+    /**
+     * In ES5 we could set the function name on the fly but in ES6 this is forbidden and we need to set it through differently
+     * We can use Object.defineProperty and set it the property to writable, see MDN for reference
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+     * @param {string} fn
+     * @param {string} fnName
+     */
+    function setFunctionName(fn, fnName) {
+      try {
+        Object.defineProperty(fn, 'name', {
+          writable: true,
+          value: fnName
+        });
+      } catch(err) {
+        fn.name = fnName;
+      }
     }
 
     function uncompiledFilter(items, args) {
@@ -844,7 +912,7 @@
 
     function getRowDiffs(rows, newRows) {
       var item, r, eitherIsNonData, diff = [];
-      var from = 0, to = newRows.length;
+      var from = 0, to = Math.max(newRows.length,rows.length);
 
       if (refreshHints && refreshHints.ignoreDiffsBefore) {
         from = Math.max(0,
@@ -863,7 +931,7 @@
           item = newRows[i];
           r = rows[i];
 
-          if ((groupingInfos.length && (eitherIsNonData = (item.__nonDataRow) || (r.__nonDataRow)) &&
+          if (!item || (groupingInfos.length && (eitherIsNonData = (item.__nonDataRow) || (r.__nonDataRow)) &&
               item.__group !== r.__group ||
               item.__group && !item.equals(r))
               || (eitherIsNonData &&
@@ -934,10 +1002,16 @@
         onPagingInfoChanged.notify(getPagingInfo(), null, self);
       }
       if (countBefore !== rows.length) {
-        onRowCountChanged.notify({previous: countBefore, current: rows.length, dataView: self}, null, self);
+        onRowCountChanged.notify({previous: countBefore, current: rows.length, dataView: self, callingOnRowsChanged: (diff.length > 0)}, null, self);
       }
       if (diff.length > 0) {
-        onRowsChanged.notify({rows: diff, dataView: self}, null, self);
+        onRowsChanged.notify({rows: diff, dataView: self, calledOnRowCountChanged: (countBefore !== rows.length)}, null, self);
+      }
+      if (countBefore !== rows.length || diff.length > 0) {
+        onRowsOrCountChanged.notify({
+          rowsDiff: diff, previousRowCount: countBefore, currentRowCount: rows.length,
+          rowCountChanged: countBefore !== rows.length, rowsChanged: diff.length > 0, dataView: self
+        }, null, self);
       }
     }
 
@@ -985,7 +1059,7 @@
           inHandler = true;
           var selectedRows = self.mapIdsToRows(selectedRowIds);
           if (!preserveHidden) {
-            setSelectedRowIds(self.mapRowsToIds(selectedRows));       
+            setSelectedRowIds(self.mapRowsToIds(selectedRows));
           }
           grid.setSelectedRows(selectedRows);
           inHandler = false;
@@ -1005,9 +1079,7 @@
         }
       });
 
-      this.onRowsChanged.subscribe(update);
-
-      this.onRowCountChanged.subscribe(update);
+      this.onRowsOrCountChanged.subscribe(update);
 
       return onSelectedRowIdsChanged;
     }
@@ -1051,14 +1123,11 @@
           storeCellCssStyles(args.hash);
         } else {
           grid.onCellCssStylesChanged.unsubscribe(styleChanged);
-          self.onRowsChanged.unsubscribe(update);
-          self.onRowCountChanged.unsubscribe(update);          
+          self.onRowsOrCountChanged.unsubscribe(update);
         }
       });
 
-      this.onRowsChanged.subscribe(update);
-
-      this.onRowCountChanged.subscribe(update);
+      this.onRowsOrCountChanged.subscribe(update);
     }
 
     $.extend(this, {
@@ -1067,6 +1136,7 @@
       "endUpdate": endUpdate,
       "setPagingOptions": setPagingOptions,
       "getPagingInfo": getPagingInfo,
+      "getIdPropertyName": getIdPropertyName,
       "getItems": getItems,
       "setItems": setItems,
       "setFilter": setFilter,
@@ -1110,8 +1180,10 @@
       "getItemMetadata": getItemMetadata,
 
       // events
+      "onSetItemsCalled": onSetItemsCalled,
       "onRowCountChanged": onRowCountChanged,
       "onRowsChanged": onRowsChanged,
+      "onRowsOrCountChanged": onRowsOrCountChanged,
       "onPagingInfoChanged": onPagingInfoChanged
     });
   }
@@ -1138,7 +1210,7 @@
       if (!groupTotals.avg) {
         groupTotals.avg = {};
       }
-      if (this.nonNullCount_ != 0) {
+      if (this.nonNullCount_ !== 0) {
         groupTotals.avg[this.field_] = this.sum_ / this.nonNullCount_;
       }
     };
@@ -1165,7 +1237,7 @@
         groupTotals.min = {};
       }
       groupTotals.min[this.field_] = this.min_;
-    }
+    };
   }
 
   function MaxAggregator(field) {
@@ -1189,7 +1261,7 @@
         groupTotals.max = {};
       }
       groupTotals.max[this.field_] = this.max_;
-    }
+    };
   }
 
   function SumAggregator(field) {
@@ -1211,7 +1283,21 @@
         groupTotals.sum = {};
       }
       groupTotals.sum[this.field_] = this.sum_;
-    }
+    };
+  }
+
+  function CountAggregator(field) {
+    this.field_ = field;
+
+    this.init = function () {
+    };
+
+    this.storeResult = function (groupTotals) {
+      if (!groupTotals.count) {
+        groupTotals.count = {};
+      }
+      groupTotals.count[this.field_] = groupTotals.group.rows.length;
+    };
   }
 
   // TODO:  add more built-in aggregators

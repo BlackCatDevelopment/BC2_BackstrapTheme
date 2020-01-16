@@ -25,7 +25,6 @@ if(\CAT\Backend::getArea()!=='login') {
                 'modules/lib_javascript/plugins/jquery.datatables/js/dataTables.bootstrap4.min.js',
                 'CAT/Backend/js/session.js',
                 'templates/backstrap/js/datetimepicker/jquery.datetimepicker.full.js',
-//                'modules/lib_javascript/plugins/tota11y/tota11y.min.js',
                 'templates/backstrap/js/bootstrap4-editable/js/bootstrap-editable.js',
 
             )

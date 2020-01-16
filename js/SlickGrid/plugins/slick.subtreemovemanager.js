@@ -137,12 +137,13 @@
       dd.selectionProxy.remove();
 
       // update level
-      var insertAfter = (dd.insertBefore-1);
-      var parent = _grid.getDataItem(insertAfter);
+      var idProperty   = _dataView.getIdPropertyName();
+      var insertAfter  = (dd.insertBefore-1);
+      var parent       = _grid.getDataItem(insertAfter);
       var parent_level = parent[options.levelProperty];
-      var start_level = parent_level+1;
-      var first_item = _grid.getDataItem(dd.selectedRows[0]);
-      var offset = start_level - first_item[options.levelProperty];
+      var start_level  = Number(parent_level)+1;
+      var first_item   = _grid.getDataItem(dd.selectedRows[0]);
+      var offset       = Number(start_level) - Number(first_item[options.levelProperty]);
 
       if (dd.canMove) {
         var eventData = {
@@ -151,8 +152,8 @@
         };
         dd.selectedRows.forEach(function(element) {
           var item = _grid.getDataItem(element);
-          item[options.levelProperty] = (item[options.levelProperty] + offset);
-          _dataView.updateItem(item.id,item);
+          item[options.levelProperty] = (Number(item[options.levelProperty]) + offset);
+          _dataView.updateItem(item[idProperty],item);
           _grid.updateRow(element);
         });
 

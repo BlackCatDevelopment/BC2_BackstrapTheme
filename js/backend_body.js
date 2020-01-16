@@ -34,6 +34,28 @@
         });
     }
 
+    /* page tree dbl click */
+    $("#sidebar .pagename").on("dblclick", function(e) {
+        e.preventDefault();
+        $(this).collapse('toggle');
+    });
+
+    /* toggle search field */
+    $('div#sidebar div#bsSearch').unbind('click').on('click', function(e) {
+        $('div#bsSearchField').toggle(500).queue(function(){
+            if($('div#bsSearchField').is(':hidden')) {
+                $('button#bsSearchClear').trigger('click');
+            }
+            $(this).dequeue();
+        });
+    });
+
+    /* clear search field */
+    $('button#bsSearchClear').unbind('click').on('click',function() {
+        $('div#sidebar div span.pagename').removeClass('text-muted').removeClass('text-danger');
+        $('#bsPageSearch').val('');
+    });
+
     /* page tree filter */
     $("input#bsPageSearch").keyup(function() {
         var find = $(this).val().toLowerCase();
@@ -196,9 +218,6 @@
         $(this).tab('show');
     });
 
-    // convert fieldsets to tabs
-    //$('form.tabbed').fieldset_to_tabs();
-
     // tooltips
     if(typeof tippy != 'undefined') {
         tippy(document.querySelectorAll('*:not([title=""])'),{arrow:true,theme:'light'});
@@ -245,11 +264,24 @@
         $("#sidebar")
             .css("overflow-x","hidden")
             .css("white-space","nowrap")
-            .removeClass("col-md-2 col-xs-1")
+            .removeClass("col-md-2 col-xs-1 p-l-0 p-r-0 collapse show")
             .addClass("col-0")
             .queue(function(){
                 $("main").addClass("ml-5");
                 $( this ).dequeue();
+                $("#sidebar-opener").addClass("visible");
+            });
+    });
+    $("#sidebar-opener").click(function() {
+        $("#sidebar")
+            .css("overflow-x","hidden")
+            .css("white-space","nowrap")
+            .addClass("col-md-2 col-xs-1")
+            .removeClass("col-0")
+            .queue(function(){
+                $("main").removeClass("ml-5");
+                $( this ).dequeue();
+                $("#sidebar-opener").removeClass("visible");
             });
     });
 

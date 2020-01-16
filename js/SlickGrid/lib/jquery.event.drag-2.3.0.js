@@ -112,9 +112,12 @@
                 // check the which directive
                 if ( event.which != 0 && dd.which > 0 && event.which != dd.which )
                     return;
-                // check for suppressed selector
-                if ( $( event.target ).is( dd.not ) )
+                // check for suppressed selector and/or
+                // make sure the target css class starts with "slick" so that we know we are in a Slick Grid
+                var targetClass = $( event.target ).attr('class') || "";                
+                if ( $( event.target ).is( dd.not ) || (!targetClass || targetClass.toString().indexOf('slick') === -1))
                     return;
+                
                 // check for handle selector
                 if ( dd.handle && !$( event.target ).closest( dd.handle, event.currentTarget ).length )
                     return;
@@ -160,7 +163,7 @@
 
             // returns an interaction object
             interaction: function( elem, dd ){
-                var offset = (elem && elem.ownerDocument) 
+                var offset = (elem && elem.ownerDocument)
                     ? $( elem )[ dd.relative ? "position" : "offset" ]() || { top:0, left:0 }
                     : { top: 0, left: 0 };
                 return {

@@ -236,20 +236,3 @@ classes should alter those!
   outline: 0;
   width: 100%;
 }
-.slickgrid-cell-reorder {
-  cursor: move;
-  background: url("images/drag-handle.png") no-repeat center center;
-}
-.toggle {
-  height: 9px;
-  width: 9px;
-  display: inline-block;
-}
-
-.toggle.expand {
-  background: url(images/expand.gif) no-repeat center center;
-}
-
-.toggle.collapse {
-  background: url(images/collapse.gif) no-repeat center center;
-}

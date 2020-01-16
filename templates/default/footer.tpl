@@ -42,13 +42,13 @@
                                 <input type="hidden" name="acc" id="acc" value="acc" />
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <div class="input-group-addon"><span class="fa fa-user fa-fw"></span></div>
+                                        <div class="input-group-addon"><span class="fa fa-user fa-fw p-2 mr-3"></span></div>
                                         <input type="text" class="form-control u" required="required" name="{$USERNAME_FIELDNAME}" id="{$USERNAME_FIELDNAME}" placeholder="{translate('Your username')}" autofocus="autofocus" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <div class="input-group-addon"><span class="fa fa-key fa-fw"></span></div>
+                                        <div class="input-group-addon"><span class="fa fa-key fa-fw p-2 mr-3"></span></div>
                                         <input type="password" class="form-control p" required="required" name="{$PASSWORD_FIELDNAME}" id="{$PASSWORD_FIELDNAME}" placeholder="{translate('Your password')}" />
                                     </div>
                                 </div>

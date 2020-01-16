@@ -16,7 +16,7 @@
       "Group": Group,
       "GroupTotals": GroupTotals,
       "EditorLock": EditorLock,
-
+  
       /***
        * A global singleton editor lock.
        * @class GlobalEditorLock
@@ -44,10 +44,46 @@
         UP: 38,
         A: 65
       },
-      "preClickClassName" : "slick-edit-preclick"
+      "preClickClassName" : "slick-edit-preclick",
+      
+      "GridAutosizeColsMode": {
+        None: 'NOA',
+        LegacyOff: 'LOF',
+        LegacyForceFit: 'LFF',
+        IgnoreViewport: 'IGV',
+        FitColsToViewport: 'FCV',
+        FitViewportToCols: 'FVC'
+      },
+      
+      "ColAutosizeMode": {
+          Locked: 'LCK',
+          Guide: 'GUI',
+          Content: 'CON',
+          ContentIntelligent: 'CTI'
+      },
+      
+      "RowSelectionMode": {
+          FirstRow: 'FS1',
+          FirstNRows: 'FSN',
+          AllRows: 'ALL',
+          LastRow: 'LS1'
+      },
+      
+      "ValueFilterMode": {
+          None: 'NONE',
+          DeDuplicate: 'DEDP',
+          GetGreatestAndSub: 'GR8T',
+          GetLongestTextAndSub: 'LNSB',
+          GetLongestText: 'LNSC'
+      },
+      
+      "WidthEvalMode": {
+          CanvasTextSize: 'CANV',
+          HTML: 'HTML'
+      }      
     }
   });
-
+    
   /***
    * An event object for passing data to event handlers and letting them control propagation.
    * <p>This is pretty much identical to how W3C and jQuery implement events.</p>
@@ -90,7 +126,7 @@
      */
     this.isImmediatePropagationStopped = function () {
       return isImmediatePropagationStopped;
-    }
+    };
   }
 
   /***
@@ -186,7 +222,7 @@
       handlers = [];
 
       return this;  // allow chaining
-    }
+    };
   }
 
   /***
@@ -270,7 +306,7 @@
       else {
         return "(" + this.fromRow + ":" + this.fromCell + " - " + this.toRow + ":" + this.toCell + ")";
       }
-    }
+    };
   }
 
 
@@ -660,7 +696,7 @@
       return ids.map(function (id) {
         return columnsById[id];
       });
-    }
+    };
   }
 })(jQuery);
 

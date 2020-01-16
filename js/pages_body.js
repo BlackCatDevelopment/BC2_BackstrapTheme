@@ -493,7 +493,7 @@ $(function() {
         var bsPageNameFormatter = function (row, cell, value, columnDef, dataContext) {
             if (value == null || value == undefined || dataContext === undefined) { return ""; }
             value = value.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-            var spacer = "<span style='display:inline-block;margin-left:10px;height:1px;width:" + (15 * dataContext["level"]-1) + "px'></span>";
+            var spacer = "<span style='display:inline-block;margin-left:10px;height:1px;width:" + (15 * Number(dataContext["level"])-1) + "px'></span>";
             return spacer + value;
         };
 
@@ -503,8 +503,8 @@ $(function() {
 
         var columns = [
             {id:"#", name: "", width:30, behavior:"MoveRow", selectable:false, resizable:false, cssClass:"bsMoveSubtree"},
-            {id:"page_id", name:"ID", width:40, field:"id"},
-            {id:"menutitle", width:300, name: $.cattranslate("Menu title"), field: "value", formatter: bsPageNameFormatter},
+            {id:"page_id", name:"ID", width:40, field:"page_id"},
+            {id:"menu_title", width:300, name: $.cattranslate("Menu title"), field: "menu_title", formatter: bsPageNameFormatter},
             {id:"visibility", width:40, name: $.cattranslate("Visibility"), field: "visibility", formatter: bsVisibilityFormatter},
             {id:"##", name: "", selectable:false, resizable:false}
         ];
@@ -512,7 +512,7 @@ $(function() {
         var options = {
             enableCellNavigation: true,
             enableColumnReorder: false,
-            forceFitColumns: true,
+            autosizeColsMode: 'LFF',
             autoHeight: true
         };
         $(function () {
@@ -527,7 +527,7 @@ $(function() {
                     if(status=="success") {
                         dataView = new Slick.Data.DataView({ inlineFilters: true });
                         dataView.beginUpdate();
-                        dataView.setItems(data,"id");
+                        dataView.setItems(data,"page_id");
                         dataView.endUpdate();
 
                         grid = new Slick.Grid("#bs-pagesGrid", dataView, columns, options);
@@ -587,9 +587,9 @@ $(function() {
                         moveRowsPlugin.onDragEnd.subscribe(function (e, args) {
                             window.setTimeout(function() {
                                 $('#bsDialog .modal-title').html('<div class=""><i class="far fa-fw fa-question-circle"></i> '+$.cattranslate('Are you sure?')+'</div>');
-                                $('#bsDialog .modal-body').html('<div class="">'+$.cattranslate("Do you want so save the new page tree?")+'</div>');
+                                $('#bsDialog .modal-body').html('<div class="">'+$.cattranslate("Do you want to save the new page tree?")+'</div>');
                                 $('#bsDialog').modal('show');
-                            },5000);
+                            },3000);
                         });
 
                         grid.registerPlugin(moveRowsPlugin);

@@ -1,0 +1,101 @@
+@import '../../../../../CAT/vendor/thomaspark/bootswatch/dist/cyborg/_variables.scss';
+
+/* missing in Bootswatch */
+$colors: () !default;
+$colors: map-merge(
+  (
+    "blue":       $blue,
+    "indigo":     $indigo,
+    "purple":     $purple,
+    "pink":       $pink,
+    "red":        $red, 0
+    "orange":     $orange,
+    "yellow":     $yellow,
+    "green":      $green,
+    "teal":       $teal,
+    "cyan":       $cyan,
+    "white":      $white,
+    "gray":       $gray-600,
+    "gray-dark":  $gray-800
+  ),
+  $colors
+);
+
+$light:           #123456;
+$dark:            #222;
+$input-border-color: #ccc;
+
+$theme-colors: () !default;
+$theme-colors: map-merge(
+  (
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "success":    $success,
+    "info":       $info,
+    "warning":    $warning,
+    "danger":     $danger,
+    "light":      $light,
+    "dark":       $dark
+  ),
+  $theme-colors
+);
+
+$enable-gradients:      true;
+
+$box-shadow-sm:         0 .125rem .25rem rgba($white, .075);
+$box-shadow:            0 .5rem 1rem rgba($white, .15);
+$box-shadow-lg:         0 1rem 3rem rgba($white, .175);
+
+$link-color:            $blue;
+$link-hover-color:      lighten($link-color, 15%);
+
+@import '../../../../../CAT/vendor/twbs/bootstrap/scss/bootstrap.scss';
+
+/* globals */
+html,body{
+    height:100%;
+    min-height:100%;
+}
+main{
+    overflow:hidden;
+    margin-bottom:50px;
+}
+a {
+    text-decoration: none !important;
+}
+
+div.container-fluid.h-100{margin-top:56px}
+
+/* top menu */
+.navbar-brand{font-size:1.2em;}
+.navbar{padding:.5rem 1rem;} /* fix for some Bootswatch themes */
+a.nav-item{padding:3px 15px;}
+#navbarMainContent{margin-left:28px;}
+#navbarMainContent a{color:inherit;}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background: $primary linear-gradient(180deg, mix($body-bg, $primary, 15%), $primary) repeat-x !important;
+    color: $black;
+}
+.btn-secondary:hover,.btn-outline-secondary:hover {
+    @include gradient-y($gray-600,$gray-800);
+}
+
+/* Breadcrumb */
+.breadcrumb {display:block}
+
+/* color change for session timeout counter */
+div#sessiontimer.sesstimealert{-webkit-animation:colorchange .2s infinite alternate;}
+@-webkit-keyframes colorchange {0% {color:#f00;} 50% {color:white} }
+
+/* modals (font far too large) */
+.modal-header h1{font-size:1.5rem;}
+.modal-body h2{font-size:1.2rem;}
+
+/* dark backdrop for session timed out modal */
+.modal-backdrop.show{opacity:.9 !important;background-color:#00;}
+
+@import '_sidebar.scss';
+@import '_glass.scss';
+@import '_icons.scss';
+@import '_slickgrid.scss';

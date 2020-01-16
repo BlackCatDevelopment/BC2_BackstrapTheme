@@ -9,7 +9,7 @@
     <div class="container-fluid h-100">
         <div class="row h-100">
             {include file='backend_nav_sidebar.tpl'}
-            <main role="main" class="col">
-                <nav aria-label="breadcrumb" role="navigation" class="" id="bsBreadcrumb">
+            <main role="main" class="col p-0 m-0">
+                <nav aria-label="breadcrumb" role="navigation" class="breadcrumb">
                   {menu(2)}
                 </nav>

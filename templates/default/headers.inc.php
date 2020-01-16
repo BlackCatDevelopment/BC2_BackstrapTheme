@@ -15,11 +15,19 @@ $debug = true;
 
 $pg = \CAT\Helper\Page::getInstance();
 
+/*
 $bootstrapcss = 'CAT/vendor/twbs/bootstrap/dist/css/bootstrap.min.css';
 
 $variant      = \CAT\Registry::get('DEFAULT_THEME_VARIANT');
 if ($variant!='' && $variant!='default') {
     $bootstrapcss = 'CAT/vendor/thomaspark/bootswatch/dist/'.$variant.'/bootstrap.min.css';
+}
+*/
+
+$bootstrapcss = 'templates/backstrap/css/darkmode/css/theme.css';
+$variant = \CAT\Registry::get('DEFAULT_THEME_VARIANT');
+if ($variant!='') {
+    $bootstrapcss = 'templates/backstrap/css/'.$variant.'/css/theme.css';
 }
 
 if (\CAT\Backend::getArea()!=='login') {
@@ -35,12 +43,10 @@ if (\CAT\Backend::getArea()!=='login') {
                 array('file'=>'CAT/vendor/fortawesome/font-awesome/css/all.min.css',),
                 array('file'=>$bootstrapcss,),
                 array('file'=>'modules/lib_javascript/plugins/tippy/1.4.1/tippy.css'),
-                #array('file'=>'CAT/vendor/components/jqueryui/themes/base/jquery-ui.min.css',),
                 array('file'=>'templates/backstrap/css/jquery-ui.theme.css',),
                 array('file'=>'templates/backstrap/js/datetimepicker/jquery.datetimepicker.min.css',),
                 array('file'=>'modules/lib_javascript/plugins/jquery.datatables/css/dataTables.bootstrap4.min.css',),
                 array('file'=>'templates/backstrap/js/bootstrap4-editable/css/bootstrap-editable.css',),
-                array('file'=>'templates/backstrap/css/default/theme.css',),
                 array('file'=>'templates/backstrap/css/default/sidebar.css',),
             ),
             'jquery' => array(
@@ -76,7 +82,6 @@ if (\CAT\Backend::getArea()!=='login') {
     }
 
     if (\CAT\Backend::getArea() == 'media') {
-        $mod_headers['backend']['css'][] = array('file'=>'templates/backstrap/css/default/ekko-lightbox.css');
         $mod_headers['backend']['js'][]  = 'templates/backstrap/js/bootstrap.lightbox/ekko-lightbox.min.js';
         $mod_headers['backend']['css'][] = array('file'=>'modules/lib_javascript/plugins/jquery.fileupload/css/jquery.fileupload-ui.css');
         $mod_headers['backend']['js'][]  = 'modules/lib_javascript/plugins/jquery.datatables/js/jquery.dataTables.min.js';
